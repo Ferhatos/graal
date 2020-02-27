@@ -467,6 +467,14 @@ final class AllPermissionsPolicy extends Policy {
     }
 }
 
+@TargetClass(sun.security.pkcs11.SunPKCS11.class)
+final class Target_sun_security_pkcs11_SunPKCS11 {
+    @Substitute
+    private void createPoller() {
+        /* Do not use SunPKCS11.TokenPoller when running as native-image */
+    }
+}
+
 /** Dummy class to have a class with the file's name. */
 public final class SecuritySubstitutions {
 }
