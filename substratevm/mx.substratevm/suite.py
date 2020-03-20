@@ -602,7 +602,9 @@ suite = {
         "com.oracle.objectfile" : {
             "subDir": "src",
             "sourceDirs" : ["src"],
-            "dependencies" : [],
+            "dependencies": [
+                "compiler:GRAAL",
+            ],
             "checkstyle" : "com.oracle.svm.hosted",
             "javaCompliance" : "8+",
             "annotationProcessors" : ["compiler:GRAAL_PROCESSOR"],
@@ -918,6 +920,9 @@ suite = {
             "description" : "SubstrateVM object file writing library",
             "dependencies": [
                 "com.oracle.objectfile"
+            ],
+            "distDependencies": [
+                "compiler:GRAAL",
             ],
         },
 
