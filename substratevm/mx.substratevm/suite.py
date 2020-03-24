@@ -895,39 +895,24 @@ suite = {
                 "com.oracle.svm.jni",
                 "com.oracle.svm.reflect",
             ],
-            "overlaps" : [
-                "SVM_CORE", "SVM_HOSTED",
-            ],
             "manifestEntries" : {
                 "Premain-Class": "com.oracle.svm.hosted.agent.NativeImageBytecodeInstrumentationAgent",
             },
             "distDependencies": [
-                "SVM_HOSTED_NATIVE",
+#                "SVM_HOSTED_NATIVE",
                 "sdk:GRAAL_SDK",
                 "OBJECTFILE",
                 "POINTSTO",
-                "mx:JUNIT_TOOL",
+#                "mx:JUNIT_TOOL",
                 "truffle:TRUFFLE_NFI",
                 "compiler:GRAAL",
             ],
-        },
-
-        "SVM_CORE": {
-            "subDir": "src",
-            "dependencies": [
-                "com.oracle.svm.core",
-                "com.oracle.svm.core.graal.amd64",
-                "com.oracle.svm.core.graal.aarch64",
-                "com.oracle.svm.core.genscavenge",
-            ],
-            "distDependencies": [
-                "sdk:GRAAL_SDK",
-                "compiler:GRAAL",
-                "POINTSTO",
-            ],
-            "exclude": [
-            ],
-            "maven": False
+            "moduleInfo" : {
+              "name" : "org.graalvm.nativeimage.builder",
+              "exports" : [
+                "* to org.graalvm.nativeimage.driver",
+              ],
+            },
         },
 
         "JVMTI_AGENT_BASE": {
@@ -942,32 +927,11 @@ suite = {
             ],
         },
 
-        "SVM_HOSTED": {
-            "subDir": "src",
-            "dependencies": [
-                "com.oracle.svm.core",
-                "com.oracle.svm.truffle",
-                "com.oracle.svm.hosted",
-            ],
-            "distDependencies": [
-                "sdk:GRAAL_SDK",
-                "compiler:GRAAL",
-                "OBJECTFILE",
-                "POINTSTO",
-            ],
-            "overlaps" : [
-                "SVM_CORE",
-            ],
-            "exclude": [
-            ],
-            "maven": False
-        },
-
         "LIBRARY_SUPPORT": {
             "subDir": "src",
             "description" : "SubstrateVM basic library-support components",
             "dependencies": [
-                "com.oracle.svm.junit",
+#                "com.oracle.svm.junit",
                 "com.oracle.svm.polyglot",
                 "com.oracle.svm.thirdparty",
             ],
@@ -977,6 +941,9 @@ suite = {
                 "OBJECTFILE",
                 "compiler:GRAAL",
             ],
+            "moduleInfo" : {
+              "name" : "org.graalvm.nativeimage.librarysupport",
+            },
         },
 
         "OBJECTFILE": {
@@ -987,7 +954,11 @@ suite = {
             ],
             "distDependencies": [
                 "compiler:GRAAL",
-            ],        },
+            ],
+            "moduleInfo" : {
+              "name" : "org.graalvm.nativeimage.objectfile",
+            },
+        },
 
         "GRAAL_HOTSPOT_LIBRARY": {
             "subDir": "src",
@@ -1047,6 +1018,19 @@ suite = {
             "distDependencies": [
                 "LIBRARY_SUPPORT",
             ],
+            "moduleInfo" : {
+              "name" : "org.graalvm.nativeimage.driver",
+              "exports" : [
+                "com.oracle.svm.driver",
+              ],
+              "uses" : [
+                "org.graalvm.compiler.options.OptionDescriptors",
+              ],
+              "requires" : [
+                "java.management",
+                "jdk.management",
+              ],
+            },
         },
 
         "SVM_AGENT": {
@@ -1092,6 +1076,18 @@ suite = {
             ],
             "exclude": [
             ],
+            "moduleInfo" : {
+              "name" : "org.graalvm.nativeimage.pointsto",
+              "exports" : [
+                "com.oracle.svm.util",
+                "com.oracle.graal.pointsto",
+                "com.oracle.graal.pointsto.api",
+                "com.oracle.graal.pointsto.reports",
+              ],
+              "requiresConcealed" : {
+                "java.base" : ["jdk.internal.module"],
+              }
+            },
         },
 
         "SVM_TESTS" : {
