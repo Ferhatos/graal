@@ -1762,14 +1762,7 @@ class GraalVmBashLauncherBuildTask(GraalVmNativeImageBuildTask):
 
 
         def _get_add_exports():
-            requiredExports = self.subject.native_image_config.requiredExports()
-            add_exports = []
-            for required in requiredExports:
-                target_modules = requiredExports[required]
-                target_modules_str = ','.join(target_module.name for target_module in target_modules)
-                required_module_name, required_package_name = required
-                add_exports.append('--add-exports=' + required_module_name + '/' + required_package_name + "=" + target_modules_str)
-            return ' '.join(sorted(add_exports))
+            return self.subject.native_image_config.get_add_exports()
 
         _template_subst = mx_subst.SubstitutionEngine(mx_subst.string_substitutions)
         _template_subst.register_no_arg('module_launcher', _is_module_launcher)
