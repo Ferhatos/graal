@@ -1063,6 +1063,7 @@ class SubstrateJvmFuncsFallbacksBuilder(mx.ArchivableProject):
         return ''
 
     def getResults(self):
+        print('Called SubstrateJvmFuncsFallbacksBuilder.getResults()')
         return SubstrateJvmFuncsFallbacksBuilder.gen_fallbacks()
 
     @staticmethod
