@@ -152,7 +152,13 @@ public final class ImageClassLoader {
                 modules.addAll(Arrays.asList(includeModulesStr.split(",")));
             }
 
-            for (String moduleResource : ModuleSupport.getModuleResources(modules)) {
+            for (String moduleResource : ModuleSupport.getSystemModuleResources(modules)) {
+                if (moduleResource.endsWith(CLASS_EXTENSION)) {
+                    executor.execute(() -> handleClassFileName(moduleResource, '/'));
+                }
+            }
+
+            for (String moduleResource : ModuleSupport.getModuleResources(modulepath())) {
                 if (moduleResource.endsWith(CLASS_EXTENSION)) {
                     executor.execute(() -> handleClassFileName(moduleResource, '/'));
                 }
@@ -477,6 +483,10 @@ public final class ImageClassLoader {
 
     public List<Path> classpath() {
         return Stream.concat(classLoader.buildcp.stream(), classLoader.imagecp.stream()).collect(Collectors.toList());
+    }
+
+    public List<Path> modulepath() {
+        return Stream.concat(classLoader.buildmp.stream(), classLoader.imagemp.stream()).collect(Collectors.toList());
     }
 
     public <T> List<Class<? extends T>> findSubclasses(Class<T> baseClass, boolean includeHostedOnly) {

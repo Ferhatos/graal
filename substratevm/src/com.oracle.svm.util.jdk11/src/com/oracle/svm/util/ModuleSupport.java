@@ -30,6 +30,7 @@ import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReader;
 import java.lang.module.ModuleReference;
 import java.lang.module.ResolvedModule;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -85,7 +86,19 @@ public final class ModuleSupport {
         return ModuleFinder.ofSystem().find(moduleName).isPresent();
     }
 
-    public static List<String> getModuleResources(Collection<String> names) {
+    public static List<String> getModuleResources(Collection<Path> modulePath) {
+        ArrayList<String> result = new ArrayList<>();
+        for (ModuleReference moduleReference : ModuleFinder.of(modulePath.toArray(Path[]::new)).findAll()) {
+            try (ModuleReader moduleReader = moduleReference.open()) {
+                result.addAll(moduleReader.list().collect(Collectors.toList()));
+            } catch (IOException e) {
+                throw new RuntimeException("Unable get list of resources in module" + moduleReference.descriptor().name(), e);
+            }
+        }
+        return result;
+    }
+
+    public static List<String> getSystemModuleResources(Collection<String> names) {
         List<String> result = new ArrayList<>();
         for (String name : names) {
             Optional<ModuleReference> moduleReference = ModuleFinder.ofSystem().find(name);

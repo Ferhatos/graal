@@ -50,11 +50,17 @@ public class NativeImageClassLoader extends URLClassLoader {
     public final List<Path> imagecp;
     public final List<Path> buildcp;
 
+    public final List<Path> imagemp;
+    public final List<Path> buildmp;
+
     NativeImageClassLoader(String[] classpath, ClassLoader parent) {
         super(verifyClassPathAndConvertToURLs(classpath), parent);
 
         imagecp = Collections.unmodifiableList(Arrays.stream(getURLs()).map(NativeImageClassLoader::urlToPath).collect(Collectors.toList()));
         buildcp = Collections.unmodifiableList(Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator)).map(Paths::get).collect(Collectors.toList()));
+
+        imagemp = Collections.emptyList();
+        buildmp = Collections.unmodifiableList(Arrays.stream(System.getProperty("jdk.module.path").split(File.pathSeparator)).map(Paths::get).collect(Collectors.toList()));
     }
 
     private static URL[] verifyClassPathAndConvertToURLs(String[] classpath) {
