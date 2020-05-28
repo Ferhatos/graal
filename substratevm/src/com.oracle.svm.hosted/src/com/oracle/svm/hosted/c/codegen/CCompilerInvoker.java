@@ -123,32 +123,31 @@ public abstract class CCompilerInvoker {
 
         @Override
         protected CompilerInfo createCompilerInfo(Path compilerPath, Scanner outerScanner) {
-            try (Scanner scanner = new Scanner(outerScanner.nextLine())) {
-                String targetArch = null;
-                /* For cl.exe the first line holds all necessary information */
-                if (scanner.hasNext("\u7528\u4E8E")) {
-                    /* Simplified-Chinese has targetArch first */
-                    scanner.next();
-                    targetArch = scanner.next();
-                }
-                if (scanner.findInLine("Microsoft.*\\(R\\) C/C\\+\\+") == null) {
+            try {
+                String versionMessage = scanner.nextLine();
+                if (!Pattern.compile("Microsoft.*\\(R\\) C/C\\+\\+").matcher(versionMessage).find()) {
                     return null;
                 }
-                scanner.useDelimiter("[. ]");
-                while (!scanner.hasNextInt()) {
-                    scanner.next();
+                Matcher archMatcher = Pattern.compile("x[0-9]+[0-9]+").matcher(versionMessage);
+                String targetArch;
+                if (archMatcher.find()) {
+                    targetArch = archMatcher.group();
                 }
-                int major = scanner.nextInt();
-                int minor0 = scanner.nextInt();
-                int minor1 = scanner.nextInt();
-                if (targetArch == null) {
-                    scanner.reset();
-                    while (scanner.hasNext()) {
-                        /* targetArch is last token in line */
-                        targetArch = scanner.next();
+                Matcher versionMatcher = Pattern.compile("[0-9]+\\.[0-9]+\\.[0-9]+").matcher(versionMessage);
+                if (versionMatcher.find()) {
+                    String version = versionMatcher.group();
+                    versionMatcher = Pattern.compile("[0-9]+").matcher(version);
+                    if (versionMatcher.find()) {
+                        int major = Integer.parseInt(versionMatcher.group());
+                        if (versionMatcher.find()) {
+                            int minor0 = Integer.parseInt(versionMatcher.group());
+                            if (versionMatcher.find()) {
+                                int minor1 = Integer.parseInt(versionMatcher.group());
+                                return new CompilerInfo(compilerPath, "microsoft", "C/C++ Optimizing Compiler", "cl", major, minor0, minor1, targetArch);
+                            }
+                        }
                     }
                 }
-                return new CompilerInfo(compilerPath, "microsoft", "C/C++ Optimizing Compiler", "cl", major, minor0, minor1, targetArch);
             } catch (NoSuchElementException e) {
                 return null;
             }
