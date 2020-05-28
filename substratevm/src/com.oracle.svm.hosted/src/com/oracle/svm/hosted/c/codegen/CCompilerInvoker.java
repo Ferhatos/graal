@@ -59,6 +59,9 @@ import jdk.vm.ci.amd64.AMD64;
 import jdk.vm.ci.code.Architecture;
 import jdk.vm.ci.sparc.SPARC;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public abstract class CCompilerInvoker {
 
     public final Path tempDirectory;
